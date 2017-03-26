@@ -1,9 +1,12 @@
-import { StyleSheet, PixelRatio} from 'react-native';
+import { StyleSheet, PixelRatio, Dimensions } from 'react-native';
 import pallete from '../styles/colors';
+
+const { width } = Dimensions.get('window');
 
 export default StyleSheet.create({
 	container: {
 		flex: 1,
+		backgroundColor: pallete.themeBackground,
 	},
 	tabBar: {
 		height: 20,
@@ -20,6 +23,8 @@ export default StyleSheet.create({
 		padding: 12,
 		marginBottom: 6,
 		backgroundColor: pallete.white,
+		borderBottomWidth: 1,
+		borderColor: pallete.border.normal,
 	},
 	cardLeft: {
 		width: 48,
@@ -134,5 +139,67 @@ export default StyleSheet.create({
 	publishActionPanel: {
 		marginTop: 4,
 		backgroundColor: pallete.white,
+	},
+	detailActionPanel: {
+		marginTop: 16,
+		backgroundColor: pallete.white,
+	},
+	userBar: {
+		flexDirection: 'row',
+		justifyContent: 'space-between',
+		padding: 12,
+		backgroundColor: pallete.white,
+		borderColor: pallete.border.normal,
+		borderBottomWidth: 1 / PixelRatio.get(),
+	},
+	userBarLeft: {
+		width: 30,
+	},
+	userBarAvatr: {
+		width: 30,
+		height: 30,
+	},
+	userBarRight: {
+		width: (width - 66)
+	},
+	userTag: {
+		marginLeft: 4,
+		paddingLeft: 4,
+		paddingRight: 4,
+		color: pallete.white,
+		fontSize: 12,
+		borderRadius: 4,
+	},
+	userLevel: {
+		backgroundColor: pallete.text.yellow,
+	},
+	userInfluence: {
+		backgroundColor: pallete.theme,
+	},
+	commentCard: {
+		flexDirection: 'column',
+		borderColor: pallete.border.normal,
+		borderBottomWidth: 1 / PixelRatio.get(),
+	},
+	commentContent: {
+		paddingLeft: 54,
+		paddingRight: 64,
+		backgroundColor: pallete.white,
+	},
+	commentReply: {
+		color: pallete.theme,
+	},
+	commentActionBar: {
+		height: 40,
+		flexDirection: 'row',
+		justifyContent: 'flex-end',
+		paddingRight: 12,
+		alignItems: 'center',
+		backgroundColor: pallete.white,
+	},
+	customTabBar: {
+		backgroundColor: pallete.white,
+		borderBottomWidth: 1,
+		borderColor: pallete.border.normal,
 	}
 });

@@ -5,6 +5,7 @@ const pallete = {
 	red: '#ED2302',
 	disable: '#dadee0',
 	tabBackground: '#f8f8f8',
+	themeBackground: '#f1f6f9',
 	text: {
 		paragraph: '#8f8f92',
 		words: '#6f7380',
@@ -13,6 +14,7 @@ const pallete = {
 		subHelp: '#bcbcbc',
 		yellow: '#ffb501',
 		deepBlue: '#196096',
+		content: '#1A2126',
 	},
 	border: {
 		normal: '#f0f0f0',
@@ -23,7 +25,7 @@ const pallete = {
 	},
 	background: {
 		normal: '#f6f6f6',
-		light: 'f1f6f9',
+		light: '#f1f6f9',
 		lighter: '#f0f0f0',
 		audio: '#cee2f1',
 	},

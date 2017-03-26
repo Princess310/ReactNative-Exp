@@ -1,7 +1,7 @@
 import { View, Text, Image, TextInput, TouchableOpacity, AlertIOS } from 'react-native';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { actions } from 'react-native-navigation-redux-helpers';
+import { Actions } from 'react-native-router-flux';
 
 import pallete from '../styles/colors';
 import styles from './styles';
@@ -9,11 +9,6 @@ import styles from './styles';
 import { Container, Content, Header, Title, Button, Left, Right, Body, Icon, ListItem, Switch} from 'native-base';
 import ImagePicker from 'react-native-image-picker';
 import { publishMoment } from '../../../actions/yaoyue';
-
-const {
-  popRoute,
-  pushRoute,
-} = actions;
 
 class PublishMoment extends Component {
 
@@ -28,14 +23,6 @@ class PublishMoment extends Component {
   componentDidMount() {
   }
 
-  popRoute() {
-    this.props.popRoute(this.props.navigation.key);
-  }
-
-  pushRoute(route, index) {
-    this.props.pushRoute({ key: route, index: 3 }, this.props.navigation.key);
-  }
-
   checkBack() {
     if(this.state.content !== ''){
       AlertIOS.alert(
@@ -47,7 +34,7 @@ class PublishMoment extends Component {
         ]
       );
     }else {
-      this.popRoute();
+      Actions.pop();
     }
   }
 
@@ -57,7 +44,7 @@ class PublishMoment extends Component {
     this.props.publishMoment({
       content: content
     }).then(() => {
-      this.popRoute();
+      Actions.pop();
     });
   }
 
@@ -209,16 +196,12 @@ class PublishMoment extends Component {
 
 function mapDispatchToProps(dispatch) {
   return {
-    popRoute: key => dispatch(popRoute(key)),
-    pushRoute: (route, key) => dispatch(pushRocute(route, key)),
     publishMoment: (props) => dispatch(publishMoment(props)),
   };
 }
 
 function mapStateToProps(state) {
-  return {
-    navigation: state.cardNavigation,
-  };
+  return {};
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(PublishMoment);

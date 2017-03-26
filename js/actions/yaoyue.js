@@ -26,6 +26,10 @@ export function doLogin(username, password) {
 export const YOAYUE_FETCH_MOMENT_ROLES = 'YOAYUE_MOMENT_FETCH_ROLES';
 export const YAOYUE_FETCH_MOMENT_LIST = 'YAOYUE_FETCH_MOMENT_LIST';
 export const YAOYUE_PUBLISH_MOMENT = 'YAOYUE_PUBLISH_MOMENT';
+export const YAOYUE_FETCH_MOMENT_DETAIL = 'YAOYUE_FETCH_MOMENT_DETAIL';
+export const YAOYUE_FETCH_NEW_MOMENT_DETAIL = 'YAOYUE_FETCH_NEW_MOMENT_DETAIL';
+export const YAOYUE_SEARCH_MOMENT = 'YAOYUE_SEARCH_MOMENT';
+export const YAOYUE_CLEAR_SEARCH_MOMENT = 'YAOYUE_CLEAR_SEARCH_MOMENT';
 
 const receiveMomentRoles = (list) => {
 	return {
@@ -49,9 +53,37 @@ const receiveMomentList = (role, list, page) => {
 
 const receiveMoment = (moment) => {
 	return {
-		type: YAOYUE_PUBLISH_MOMENT,
+		type: YAOYUE_FETCH_MOMENT_DETAIL,
 		payload: {
-			moment: moment
+			data: moment
+		}
+	}
+}
+
+const receiveNewMoment = (moment) => {
+	return {
+		type: YAOYUE_FETCH_NEW_MOMENT_DETAIL,
+		payload: {
+			data: moment
+		}
+	}
+}
+
+const receiveSearchMomentList = (list, page) => {
+	return {
+		type: YAOYUE_SEARCH_MOMENT,
+		payload: {
+			list: list,
+			page: page,
+		}
+	}
+}
+
+const emptySearchMoment = () => {
+	return {
+		type: YAOYUE_CLEAR_SEARCH_MOMENT,
+		payload: {
+			list: [],
 		}
 	}
 }
@@ -76,7 +108,64 @@ export function fetchMomentList(role, page) {
 
 export function publishMoment(props) {
 	return dispatch => {
-		return fetch.doPost("moments/release", props)
-			.then(response => dispatch(receiveMoment(response)))
+		return fetch.doPost("moments/release", props);
 	}
+}
+
+export function fetchMomentDetail(id) {
+	return dispatch => {
+		return fetch.doGet('moments/details', {
+			moments_id: id
+		}).then(response => dispatch(receiveMoment(response.data)));
+	}
+}
+
+export function fetchNewMomentDetail(id) {
+	return dispatch => {
+		return fetch.doGet('moments/new-details', {
+			moments_id: id
+		}).then(response => dispatch(receiveNewMoment(response.list[0])));
+	}
+}
+
+export function doLikeMomet(id, uid) {
+	return dispatch => {
+		return fetch.doPost('moments/like', {
+			moments_id: id,
+			to_uid: uid
+		}).then((response) => dispatch(fetchNewMomentDetail(id)));
+	}
+}
+
+export function doLikeComment(id, uid) {
+	return dispatch => {
+		return fetch.doPost('comment-like', {
+			moments_id: id,
+			to_uid: uid
+		}).then((response) => dispatch(fetchNewMomentDetail(id)));
+	}
+}
+
+export function doAddComment(id, uid, content, pid) {
+	return dispatch => {
+		return fetch.doPost('comment-like', {
+			moments_id: id,
+			to_uid: uid,
+			content: content,
+			pid: pid,
+		}).then((response) => dispatch(fetchNewMomentDetail(id)));
+	}
+}
+
+export function doSearchMoment(keyword, page) {
+	return dispatch => {
+		return fetch.doGet('moments/search', {
+			keyword: keyword,
+			page: page,
+		}).then((response) => dispatch(receiveSearchMomentList(response.list, response.page)));
+	}
+}
+
+export function clearSearchMoment() {
+	return dispatch => dispatch(emptySearchMoment());
 }

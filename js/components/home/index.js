@@ -3,7 +3,7 @@ import React, { Component } from 'react';
 import { apiRoot } from '../../utils/fetch';
 import { Text } from 'react-native';
 import { connect } from 'react-redux';
-import { actions } from 'react-native-navigation-redux-helpers';
+import { Actions } from "react-native-router-flux";
 import { Container, Header, Content, Footer, Title, Button, Left, Right, Body, Icon } from 'native-base';
 import { Card, ListItem, Button as Ebutton } from 'react-native-elements';
 import { Grid, Row } from 'react-native-easy-grid';
@@ -11,11 +11,6 @@ import { Grid, Row } from 'react-native-easy-grid';
 import { openDrawer } from '../../actions/drawer';
 import { fetchAppList } from '../../actions/app';
 import styles from './styles';
-
-const {
-  reset,
-  pushRoute,
-} = actions;
 
 class Home extends Component {
 
@@ -51,8 +46,16 @@ class Home extends Component {
     ]
   }
 
-  pushRoute(route, index) {
-    this.props.pushRoute({ key: route, index: 1 }, this.props.navigation.key);
+  pushRoute(key) {
+    const { user } = this.props;
+
+    if(key === 'smallYaoyue') {
+      if(user.access_token && user.access_token !== '') {
+        Actions.smallYaoyueTabs();
+      }else {
+        Actions.smallYaoyue();
+      }
+    }
   }
 
   render() {
@@ -70,7 +73,7 @@ class Home extends Component {
             backgroundColor={app.buttonColor}
             buttonStyle={{borderRadius: 0, marginLeft: 0, marginRight: 0, marginBottom: 0}}
             title='VIEW NOW'
-            onPress={() => this.pushRoute(app.key, 1)}
+            onPress={() => this.pushRoute(app.key)}
           />
         </Card>
       )
@@ -85,7 +88,7 @@ class Home extends Component {
             </Button>
           </Left>
           <Body>
-            <Title>{(this.props.name) ? this.props.name : 'Home'}</Title>
+            <Title>{(this.props.name) ? this.props.name : 'Apps'}</Title>
           </Body>
           <Right />
         </Header>
@@ -100,7 +103,6 @@ class Home extends Component {
 function bindAction(dispatch) {
   return {
     openDrawer: () => dispatch(openDrawer()),
-    pushRoute: (route, key) => dispatch(pushRoute(route, key)),
     reset: key => dispatch(reset([{ key: 'login' }], key, 0)),
     getAppList: () => dispatch(fetchAppList()),
   };
@@ -111,6 +113,7 @@ const mapStateToProps = state => ({
   list: state.list.list,
   navigation: state.cardNavigation,
   appList: state.app.list,
+  user: state.yaoyue.user,
 });
 
 export default connect(mapStateToProps, bindAction)(Home);

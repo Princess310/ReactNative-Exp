@@ -2,7 +2,6 @@ import { View, Text, Image, TouchableOpacity, Linking } from 'react-native';
 import React, { Component } from 'react';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { connect } from 'react-redux';
-import { actions } from 'react-native-navigation-redux-helpers';
 
 import pallete from '../styles/colors';
 import styles from './styles';
@@ -14,11 +13,7 @@ import { oepnGallery } from '../../../actions/gallery';
 import ParsedText from 'react-native-parsed-text';
 
 import date from '../../../utils/date';
-
-const {
-  popRoute,
-  pushRoute,
-} = actions;
+import { doLikeMomet } from '../../../actions/yaoyue';
 
 class MomentCard extends Component {
   static propTypes = {
@@ -30,14 +25,6 @@ class MomentCard extends Component {
   }
 
   componentDidMount() {
-  }
-
-  popRoute() {
-    this.props.popRoute(this.props.navigation.key);
-  }
-
-  pushRoute(route, index) {
-    this.props.pushRoute({ key: route, index: 3 }, this.props.navigation.key);
   }
 
   renderPhoneText(matchingString, matches) {
@@ -63,10 +50,17 @@ class MomentCard extends Component {
     }))
   }
 
+  handleDoLike = () => {
+    const { moment } = this.props;
+
+    this.props.doLikeMomet(moment.id, moment.uid);
+  }
+
   render() {
-  	const { lazyloadHost, moment } = this.props;
+  	const { lazyloadHost, moment, search, list } = this.props;
   	const imageLength = moment.pictures.length;
   	const imageWidth = imageLength > 4 ? 75 : (imageLength > 1 ? 110 : 210);
+    const showInList = list ? true : false;
 
   	const imagesViews = moment.pictures.map((image, i) => {
   		return (
@@ -77,11 +71,19 @@ class MomentCard extends Component {
 	  			}}
 	  			style={[styles.cardImage, {width: imageWidth, height: imageWidth}]}
 	  		>
-  				<LazyloadImage
-	  				host={lazyloadHost}
-	  				source={{uri: image}}
-	  				style={[styles.cardImage, {width: imageWidth, height: imageWidth}]}
-	  			/>
+          { lazyloadHost ?
+            <LazyloadImage
+              host={lazyloadHost}
+              source={{uri: image}}
+              style={[styles.cardImage, {width: imageWidth, height: imageWidth}]}
+            /> : 
+            <Image
+              host={lazyloadHost}
+              source={{uri: image}}
+              style={[styles.cardImage, {width: imageWidth, height: imageWidth}]}
+            /> 
+          }
+  				
   			</TouchableOpacity>
   		)
   	});
@@ -104,7 +106,7 @@ class MomentCard extends Component {
         	<Text style={styles.cardTime}>{date.parseDate(moment.created_at)}</Text>
         	<View style={styles.cardContent}>
             <ParsedText
-              numberOfLines={4}
+              numberOfLines={showInList ? 4 : 0}
               style={styles.cardContentText}
               parse={
                 [
@@ -122,20 +124,23 @@ class MomentCard extends Component {
         		{moment.hits > 0 && <Text style={styles.cardSubInfoText}>{moment.hits}人看过</Text>}
         		{moment.balance >= 0 && <Text style={[styles.cardSubInfoText, styles.cardSubInfoHongbao]}>红包金额剩余{moment.remained}元</Text>}
         	</View>
-        	<View style={styles.cardAction}>
-        		<View style={styles.cardActionItem}>
-        			<Icon name='md-share' style={[styles.cardActionIcon, shareStyle]}/>
-        			<Text style={styles.cardActionText}>{moment.share_count}</Text>
-        		</View>
-        		<View style={styles.cardActionItem}>
-        			<Icon name='md-chatboxes' style={[styles.cardActionIcon, commentStyle]}/>
-        			<Text style={styles.cardActionText}>{moment.comment_count}</Text>
-        		</View>
-        		<View style={styles.cardActionItem}>
-        			<Icon name='md-thumbs-up' style={[styles.cardActionIcon, likeStyle]}/>
-        			<Text style={styles.cardActionText}>{moment.likes.length}</Text>
-        		</View>
-        	</View>
+          {
+            search ? null :
+            <View style={styles.cardAction}>
+              <View style={styles.cardActionItem}>
+                <Icon name='md-share' style={[styles.cardActionIcon, shareStyle]}/>
+                <Text style={styles.cardActionText}>{moment.share_count}</Text>
+              </View>
+              <View style={styles.cardActionItem}>
+                <Icon name='md-chatboxes' style={[styles.cardActionIcon, commentStyle]}/>
+                <Text style={styles.cardActionText}>{moment.comment_count}</Text>
+              </View>
+              <TouchableOpacity style={styles.cardActionItem} onPress={this.handleDoLike}>
+                <Icon name='md-thumbs-up' style={[styles.cardActionIcon, likeStyle]}/>
+                <Text style={styles.cardActionText}>{moment.likes.length}</Text>
+              </TouchableOpacity>
+            </View>
+          }
         </View>
       </View>
     );
@@ -144,16 +149,13 @@ class MomentCard extends Component {
 
 function mapDispatchToProps(dispatch) {
   return {
-    popRoute: key => dispatch(popRoute(key)),
-    pushRoute: (route, key) => dispatch(pushRocute(route, key)),
     oepnGallery: (initialPage, images) => dispatch(oepnGallery(initialPage, images)),
+    doLikeMomet: (id, uid) => dispatch(doLikeMomet(id, uid)),
   };
 }
 
 function mapStateToProps(state) {
-  return {
-    navigation: state.cardNavigation,
-  };
+  return {};
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(MomentCard);

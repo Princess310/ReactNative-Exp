@@ -1,7 +1,7 @@
 
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { actions } from 'react-native-navigation-redux-helpers';
+import { Actions } from 'react-native-router-flux';
 
 import { View, Image, Text, Modal } from 'react-native';
 import { Button } from 'react-native-elements'
@@ -12,20 +12,7 @@ import styles from './styles';
 
 import { closeGallery } from '../../actions/gallery';
 
-const {
-  popRoute,
-  pushRoute,
-} = actions;
-
 class SmallYaoyue extends Component {
-
-  static propTypes = {
-    popRoute: React.PropTypes.func,
-    navigation: React.PropTypes.shape({
-      key: React.PropTypes.string,
-    }),
-  }
-
   state = {
     imgList: [
       require('../../../images/yaoyue/app-1.jpg'),
@@ -34,14 +21,6 @@ class SmallYaoyue extends Component {
       require('../../../images/yaoyue/app-4.png'),
       require('../../../images/yaoyue/app-5.png'),
     ]
-  }
-
-  popRoute() {
-    this.props.popRoute(this.props.navigation.key);
-  }
-
-  pushRoute(route) {
-    this.props.pushRoute({ key: route, index: 2 }, this.props.navigation.key);
   }
 
   componentWillMount() {
@@ -67,11 +46,11 @@ class SmallYaoyue extends Component {
         </Swiper>
         <View style={styles.buttonWrapper}>
           <Button
-            onPress={() => this.popRoute()}
+            onPress={() => Actions.pop()}
             buttonStyle={styles.button}
             title='免费注册' />
           <Button
-            onPress={() => this.pushRoute('smallYaoyueLogin')}
+            onPress={() => Actions.smallYaoyueLogin()}
             buttonStyle={styles.button}
             title='登陆' />
         </View>
@@ -97,14 +76,11 @@ class SmallYaoyue extends Component {
 
 function bindAction(dispatch) {
   return {
-    popRoute: key => dispatch(popRoute(key)),
-    pushRoute: (route, key) => dispatch(pushRoute(route, key)),
     closeGallery: () => dispatch(closeGallery()),
   };
 }
 
 const mapStateToProps = state => ({
-  navigation: state.cardNavigation,
   gallery: state.gallery,
 });
 

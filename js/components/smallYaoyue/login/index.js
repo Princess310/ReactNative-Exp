@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { actions } from 'react-native-navigation-redux-helpers';
+import { Actions } from 'react-native-router-flux';
 
 import { View, Image, Text, TouchableHighlight, AsyncStorage } from 'react-native';
 import { Container, Content, Header, Title, Button, Left, Right, Body, Form, Item, Input, Label, Icon} from 'native-base';
@@ -11,32 +11,12 @@ import pallete from '../styles/colors';
 
 import { doLogin } from '../../../actions/yaoyue';
 
-const {
-  popRoute,
-  pushRoute,
-} = actions;
-
 class Login extends Component {
-
-  static propTypes = {
-    popRoute: React.PropTypes.func,
-    navigation: React.PropTypes.shape({
-      key: React.PropTypes.string,
-    }),
-  }
 
   state = {
     showPwd: false,
     username: '',
     password: '',
-  }
-
-  popRoute() {
-    this.props.popRoute(this.props.navigation.key);
-  }
-
-  pushRoute(route, index) {
-    this.props.pushRoute({ key: route, index: 3 }, this.props.navigation.key);
   }
 
   _toggleTextEntry = () => {
@@ -65,7 +45,7 @@ class Login extends Component {
       const token = res.payload.access_token;
 
       AsyncStorage.setItem('access_token', token).then(() => {
-        self.pushRoute('smallYaoyueTabs', 3);
+        Actions.smallYaoyueTabs();
       });
     });
   }
@@ -76,7 +56,7 @@ class Login extends Component {
         <Container>
           <Header>
             <Left>
-              <Button transparent onPress={() => this.popRoute()}>
+              <Button transparent onPress={() => Actions.pop()}>
                 <Icon name="md-arrow-back" />
               </Button>
             </Left>
@@ -123,14 +103,11 @@ class Login extends Component {
 
 function bindAction(dispatch) {
   return {
-    popRoute: key => dispatch(popRoute(key)),
-    pushRoute: (route, key) => dispatch(pushRoute(route, key)),
     doLogin: (username, password) => dispatch(doLogin(username, password)),
   };
 }
 
 const mapStateToProps = state => ({
-  navigation: state.cardNavigation,
   yaoyue: state.yaoyue,
 });
 

@@ -1,6 +1,7 @@
 
 import { combineReducers } from 'redux';
 
+import routes from './routes';
 import drawer from './drawer';
 import cardNavigation from './cardNavigation';
 import user from './user';
@@ -13,6 +14,7 @@ import gallery from './gallery';
 
 export default combineReducers({
 
+  routes,
   drawer,
   user,
   list,

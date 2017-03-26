@@ -1,8 +1,8 @@
-import { View, Text, TabBarIOS, ListView, RefreshControl, ActivityIndicator } from 'react-native';
+import { View, Text, TabBarIOS, TouchableOpacity, ListView, RefreshControl, ActivityIndicator } from 'react-native';
 import React, { Component } from 'react';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { connect } from 'react-redux';
-import { actions } from 'react-native-navigation-redux-helpers';
+import { Actions } from 'react-native-router-flux';
 
 import pallete from '../styles/colors';
 import styles from './styles';
@@ -14,13 +14,9 @@ import {
 import ActionButton from 'react-native-action-button';
 
 import MomentCard from './momentCard';
+import SearchMoment from './searchMoment';
 import LoadMoreIndicator from '../internal/loadMoreIndicator';
 import { fetchMomentRoles, fetchMomentList } from '../../../actions/yaoyue';
-
-const {
-  popRoute,
-  pushRoute,
-} = actions;
 
 let roleForRoleMap = {};
 
@@ -36,7 +32,8 @@ class Moment extends Component {
     loadingForRoleMap: {},
     pageForRoleMap: {},
     firstLoadedRoleMap: {},
-    ds: new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2})
+    ds: new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2}),
+    showSearchModal: false,
   }
 
   componentDidMount() {
@@ -52,14 +49,6 @@ class Moment extends Component {
         this.props.fetchMomentList(firstRole);
       }
     });
-  }
-
-  popRoute() {
-    this.props.popRoute(this.props.navigation.key);
-  }
-
-  pushRoute(route, index) {
-    this.props.pushRoute({ key: route, index: 4 }, this.props.navigation.key);
   }
 
   _onChangeTab = (tab) => {
@@ -172,9 +161,11 @@ class Moment extends Component {
           dataSource={this.state.ds.cloneWithRows(list)}
           renderRow={(moment) => {
             return (
-              <LazyloadView key={moment.id} host={lazyloadHost}>
-                <MomentCard moment={moment} lazyloadHost={lazyloadHost} />
-              </LazyloadView>
+              <TouchableOpacity onPress={() => {Actions.smallYaoyueMomentDetail({id: moment.id})}}>
+                <LazyloadView key={moment.id} host={lazyloadHost}>
+                  <MomentCard moment={moment} lazyloadHost={lazyloadHost} list={true} />
+                </LazyloadView>
+              </TouchableOpacity>
             )
           }}
           renderDistance={100}
@@ -211,10 +202,10 @@ class Moment extends Component {
           buttonColor={pallete.theme}
           offsetY={80}
         >
-          <ActionButton.Item buttonColor='#9b59b6' title='发布' onPress={() => this.pushRoute('smallYaoyuePublishMoment')}>
+          <ActionButton.Item buttonColor='#9b59b6' title='发布' onPress={() => Actions.smallYaoyuePublishMoment()}>
             <Icon name="md-create" style={styles.actionButtonIcon} />
           </ActionButton.Item>
-          <ActionButton.Item buttonColor='rgba(231,76,60,1)' title='搜索' onPress={() => {}}>
+          <ActionButton.Item buttonColor='rgba(231,76,60,1)' title='搜索' onPress={() => Actions.smallYaoyueMomentSearch()}>
             <Icon name="md-search" style={styles.actionButtonIcon} />
           </ActionButton.Item>
           <ActionButton.Item buttonColor='#1abc9c' title='返回顶部' onPress={() => {this.backTop()}}>
@@ -228,8 +219,6 @@ class Moment extends Component {
 
 function mapDispatchToProps(dispatch) {
   return {
-    popRoute: key => dispatch(popRoute(key)),
-    pushRoute: (route, key) => dispatch(pushRoute(route, key)),
     fetchMomentRoles: () => dispatch(fetchMomentRoles()),
     fetchMomentList: (role, page) => dispatch(fetchMomentList(role, page)),
   };
@@ -237,7 +226,6 @@ function mapDispatchToProps(dispatch) {
 
 function mapStateToProps(state) {
   return {
-    navigation: state.cardNavigation,
     moment: state.yaoyue.moment,
   };
 }
